@@ -4,3 +4,5 @@
 
 1. 执行 install.sh 安装node依赖
 2. `npm run start` 运行
+
+#### 免费节假日 API http://timor.tech/api/holiday
