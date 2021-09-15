@@ -9,7 +9,7 @@ const transportConsole = new transports.Console({
 });
 
 const dailyTransportFile = new transports.DailyRotateFile({
-  filename: './logfile/udpserver-%DATE%.log',
+  filename: './logfile/wefitos-%DATE%.log',
   prepend: true,
   zippedArchive: true,
   datePattern: 'YYYY-MM-DD',

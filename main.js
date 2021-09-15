@@ -1,5 +1,28 @@
 var logger = require('./logger').logger;
 const httptool = require('./httpTool').httptool;
+const fs = require('fs')
+
+function loadJson(path) {
+  let data;
+  try {
+    let rawdata = fs.readFileSync(path);
+    data = JSON.parse(rawdata);
+  } catch (error) {
+    console.log(error);
+  }
+  return data
+}
+const holiday = loadJson('json/holiday2021.json');
+
+/* 质朴长存法 补0 */
+function pad(num, n) {
+    var len = num.toString().length;
+    while(len < n) {
+        num = "0" + num;
+        len++;
+    }
+    return num;
+}
 
 /** 约定几天后 */
 const timeNum = 6
@@ -14,11 +37,37 @@ function fun_date(num) {
     //今天时间
     let time1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate()
     // console.log(time1);
+    
     let date2 = new Date(date1);
     date2.setDate(date1.getDate() + num);
+
+    let day1 = pad(date2.getMonth() + 1, 2) + "-" + pad(date2.getDate(), 2);
+    // console.log(day1);
+    let isDayOff = false;  // 是否为调休日
+    if (holiday && holiday.holiday) {
+        let day_list = holiday.holiday;
+        let day_info = day_list[day1];
+        if (day_info) {
+            if (day_info.holiday) {
+                logger.info(day_info.date + ' ' + day_info.name +' 不用约课');
+                return false;
+            } else {
+                isDayOff = true;
+                logger.info(day_info.date + ' ' + day_info.name +' 需要约课');
+            }
+        }
+    }
+
     //num是正数表示之后的时间，num负数表示之前的时间，0表示今天
     let time2 = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate(); 
     // console.log(time2);
+    // 返回值是 0（周日） 到 6（周六） 之间的一个整数。
+    let day = date2.getDay();
+    // console.log('day: ', day);
+    if (!isDayOff && (day===0 || day===6)) {
+        logger.info(time2 + ' 周六、周日不需要约课');
+        return false
+    }
     return time2;
 }
 
@@ -87,6 +136,9 @@ function book(time) {
 
 function main() {
     let d = fun_date(timeNum);
+    if (!d) {
+        return;
+    }
 
     // 每天20点的时间戳 s
     let time_20 = parseInt(getTargetTime(`${d} 20:00:00`)/1000);
@@ -96,7 +148,7 @@ function main() {
     let time_21 = parseInt(getTargetTime(`${d} 21:00:00`)/1000);
     // console.log(time_21);
 
-    tableData.currentDay = parseInt(getTargetTime(`${d} 01:00:00`)/1000)
+    tableData.currentDay = parseInt(getTargetTime(`${d} 00:01:00`)/1000)
     httptool.post(tableUrl, tableData, (data)=>{
         // logger.info(JSON.stringify(data.data.coll));
         if (!data) {
@@ -127,13 +179,14 @@ function main() {
             return
         }
 
-        logger.info('没有课可以约了!')
+        logger.info(d, '没有课可以约了!')
     });
 
 }
 // main()
 // book()
 // book("20:00:00")
+
 
 // 每天 0 点定时执行
 const schedule = require('node-schedule');
@@ -142,7 +195,7 @@ const schedule = require('node-schedule');
 let rule = new schedule.RecurrenceRule();
 // rule.second = [0, 10, 20, 30, 40, 50]; // 每隔 10 秒执行一次
 
-// 每天 0 点执行
+// 每天 00:01:00 执行
 rule.hour = 0;
 rule.minute = 1;
 rule.second = 0;
