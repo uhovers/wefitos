@@ -25,7 +25,7 @@ function pad(num, n) {
 }
 
 /** 约定几天后 */
-const timeNum = 6
+const timeNum = 7
 
 /**
  * num是正数表示之后的时间，num负数表示之前的时间，0表示今天
@@ -87,6 +87,7 @@ function getTargetTime(t){
     return date.getTime()
 }
 
+// const tableUrl = "https://app.wefitos.com/app/club/coache/coach-time-table"
 const tableUrl = "https://app.wefitos.com/app/club/coache/coach-time-table"
 let tableData = {
     cli_v: 1952,
@@ -147,6 +148,7 @@ function main() {
     // 每天21点的时间戳 s
     let time_21 = parseInt(getTargetTime(`${d} 21:00:00`)/1000);
     // console.log(time_21);
+    logger.info('开始预约：' + d)
 
     tableData.currentDay = parseInt(getTargetTime(`${d} 00:01:00`)/1000)
     httptool.post(tableUrl, tableData, (data)=>{
