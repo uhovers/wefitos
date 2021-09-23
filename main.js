@@ -25,7 +25,7 @@ function pad(num, n) {
 }
 
 /** 约定几天后 */
-const timeNum = 7
+const timeNum = 6
 
 /**
  * num是正数表示之后的时间，num负数表示之前的时间，0表示今天
