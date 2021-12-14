@@ -1,0 +1,24 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "logfile\\.e0d76bdc3fd40720619e60c04b811936029051b7-audit.json",
+    "files": [
+        {
+            "date": 1631612166690,
+            "name": "logfile\\udpserver-2021-09-14.log",
+            "hash": "457d8fa5d9ff0152f7947843e842a1b2"
+        },
+        {
+            "date": 1631617433821,
+            "name": "logfile/udpserver-2021-09-14.log",
+            "hash": "8b8343e4ea431a3419b8fd0ce090a551"
+        },
+        {
+            "date": 1631635260108,
+            "name": "logfile/udpserver-2021-09-15.log",
+            "hash": "bf995e453ca135f7350f8fe039776e79"
+        }
+    ]
+}
